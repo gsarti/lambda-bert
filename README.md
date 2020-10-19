@@ -1,5 +1,7 @@
 # LambdaBERT
 
+![LambdaBert](img/lambda_bert_small.png)
+
 ### A 🤗transformers-style implementation of BERT using LambdaNetworks instead of self-attention
 
 The `LambdaLayer` implementation was adapted from [lucidrains' implementation](https://github.com/lucidrains/lambda-networks) to work with 1D sequences, following the directives taken from the original paper (currently under review). The 🤗`transformer` architecture is used to minimize reimplementation.
