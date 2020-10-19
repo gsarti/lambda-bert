@@ -1,22 +1,35 @@
 # LambdaBERT
 
-### A 🤗-style implementation of BERT using lambda layers instead of self-attention
+### A 🤗transformers-style implementation of BERT using LambdaNetworks instead of self-attention
 
 The `LambdaLayer` implementation was adapted from [lucidrains' implementation](https://github.com/lucidrains/lambda-networks) to work with 1D sequences, following the directives taken from the original paper (currently under review). The 🤗`transformer` architecture is used to minimize reimplementation.
 
-*__Motivation:__ Linear lambda functions use the key-value product __λc__ as a learned projection matrix that is input-independent (i.e. a set of intrinsic learned latent dimensions over training examples), as opposed to the token-dependent nature of self-attention. From an interpretability POV, pre-trained __λc__ parameters may then be a more interesting subject to probe for linguistic structures than attention weights.*
+*__Motivation:__ Linear lambda functions use the key-value product __λc__ as a learned projection matrix that is input-independent (i.e. a subset of learned latent dimensions over training examples), as opposed to the token-dependent nature of self-attention. From an interpretability POV, pre-trained __λc__ parameters may then be a more interesting subject to probe for linguistic structures than attention weights.*
 
-### Setup
+### Content
 
 Run `./setup.sh` to install all dependencies in a local Python3 environment.
 
-### Content
 
 - `configuration_lambdabert.py`, `modeling_lambdabert.py`: 🤗`transformer`-compliant files containing the model implementation, which is a light adaptation of the standard `BertModel` class for supporting lambda computations.
 
 - `custom_datasets.py`: Reimplementation of NSP and SOP datasets from 🤗`transformer` to work with the demo language modeling script (`wikitext2`)
 
-- `run_language_modeling.py`: Stripped down version from 🤗`transformer` examples, allows to pretrain `LambdaBert` on WikiText2 using the 🤗`dataset` library.
+- `run_language_modeling.py`: Stripped down version from 🤗`transformer` examples, allows to pretrain `LambdaBert` on WikiText2 using the 🤗`datasets` library.
+
+Run pre-training as:
+
+```shell
+# Customize with HuggingFace training args
+python run_language_modeling.py \
+  --output_dir="models" \
+  --do_train \
+  --do_eval \
+  --eval_steps=100 \
+  --sop # Omit for MLM + NSP instead of MLM + SOP
+```
+
+*TODO: Language modeling benchmarks on WikiText2, WikiText103*
 
 ### Example usage
 
@@ -32,7 +45,7 @@ config = LambdaBertConfig(local_context_size=25, output_lambda_params=True)
 # model = LambdaBertModel.from_pretrained()
 model = LambdaBertModel(config)
 tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
-inputs = tokenizer("Is attention really all that you need?", return_tensors="pt")
+inputs = tokenizer("Is attention really all you need?", return_tensors="pt")
 
 # Tuple containing
 # 1) Pooled output at last layer [batch_size x 1 x hidden_size]
@@ -48,7 +61,7 @@ out = model(**inputs)
 
 [lucidrain's LambdaNetworks original implementation](https://github.com/lucidrains/lambda-networks)
 
-[Original LambdaNetworks paper](https://openreview.net/forum?id=xTJEN-ggl1b)
+[Original LambdaNetworks paper under review at ICLR 2021](https://openreview.net/forum?id=xTJEN-ggl1b)
 
 ### Citations
 
